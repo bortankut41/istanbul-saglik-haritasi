@@ -21,7 +21,12 @@
   #results { margin:6px 0 0; padding:0; list-style:none; max-height:180px; overflow:auto; }
   #results li { padding:5px 4px; border-bottom:1px solid var(--line); cursor:pointer; font-size:13px; }
   #results li:hover { background:rgba(127,127,127,.12); }
-  .cats { margin:10px 0 6px; }
+  .cats { margin:4px 0 6px; }
+  .sec { margin:12px 0 4px; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  .kinds { display:flex; flex-wrap:wrap; gap:4px 10px; margin:2px 0 4px 26px; font-size:12px; }
+  .kinds label { display:flex; align-items:center; gap:4px; cursor:pointer; }
+  .kinds i { width:12px; height:12px; border-radius:2px; display:inline-block; border:2px solid; box-sizing:border-box; }
+  .sw.area { border:2px dashed #ffd600; background:rgba(255,214,0,.15); border-radius:3px; box-shadow:none; }
   .cat { display:flex; align-items:center; gap:8px; padding:3px 0; cursor:pointer; user-select:none; }
   .cat input { margin:0; }
   .cat .n { margin-left:auto; color:var(--muted); font-variant-numeric:tabular-nums; font-size:12px; }
@@ -62,6 +67,11 @@
   <div class="sub" id="total"></div>
   <input id="q" type="search" placeholder="Tesis ara (ör. Şehir Hastanesi, Kartal ASM)">
   <ul id="results"></ul>
+  <div class="sec">Arazi katmanları</div>
+  <label class="cat"><input type="checkbox" id="lyrParcels" checked><span class="pin sw big" style="background:#ffd600;color:#222">₺</span><span>Kamu satış arsaları (ihalede)</span><span class="n" id="nParcels"></span></label>
+  <label class="cat"><input type="checkbox" id="lyrAreas" checked><span class="sw area"></span><span>Hastaneye dönüşebilir alanlar (20.000 m²+)</span><span class="n" id="nAreas"></span></label>
+  <div id="areaKinds" class="kinds"></div>
+  <div class="sec">Sağlık tesisleri</div>
   <div class="cats" id="cats"></div>
   <div class="row"><button id="all">Tümünü seç</button><button id="none">Hiçbiri</button><button id="onlyH">Sadece hastaneler</button></div>
   <label class="opt"><input type="checkbox" id="cluster" checked> Yakın noktaları grupla</label>
@@ -189,6 +199,71 @@ document.getElementById("q").addEventListener("input", e => {
   }
   if (!n) resEl.innerHTML = `<li style="cursor:default;color:var(--muted)">Sonuç yok</li>`;
 });
+
+// --- Arazi katmanları ---
+const PARCELS = [{"kurum":"Sosyal Güvenlik Kurumu (SGK)","ilce":"Başakşehir","mahalle":"Hoşdere","ada":544,"parsel":3,"m2":18505.22,"imar":"Ticaret + Konut Alanı","bedel":"740.220.000 TL (tahmini satış değeri)","ihale":"Elektronik açık artırma: 02.11.2026 12:45 – 03.11.2026 12:45. Başvurular 23.10.2026'da kapandı.","link":"https://www.ilan.gov.tr/ilan/2241095/emlak-arsa-istanbulda-3-adet-arsa-satis-ihalesi","tip":"kamu_arsa","geometry":[[41.07541,28.67517],[41.07533,28.67634],[41.07544,28.67646],[41.07606,28.67722],[41.07643,28.6777],[41.07662,28.67797],[41.0767,28.67809],[41.07677,28.67819],[41.0768,28.67818],[41.07682,28.67803],[41.07686,28.67759],[41.07687,28.67736],[41.07688,28.6772],[41.07689,28.6771],[41.07688,28.67694],[41.07666,28.67672],[41.0765,28.67633],[41.07608,28.67587],[41.07588,28.67572],[41.07556,28.67534],[41.07541,28.67517]],"tapu_alan":"18.505,22","nitelik":"Arsa","lon":28.67689,"lat":41.07632619047619},{"kurum":"Sosyal Güvenlik Kurumu (SGK)","ilce":"Başakşehir","mahalle":"Hoşdere","ada":544,"parsel":4,"m2":13000.23,"imar":"Ticaret + Konut Alanı","bedel":"480.000.000 TL (tahmini satış değeri)","ihale":"Elektronik açık artırma: 02.11.2026 13:00 – 03.11.2026 13:00. Başvurular 23.10.2026'da kapandı.","link":"https://www.ilan.gov.tr/ilan/2241095/emlak-arsa-istanbulda-3-adet-arsa-satis-ihalesi","tip":"kamu_arsa","geometry":[[41.07541,28.67517],[41.07523,28.67497],[41.07474,28.67463],[41.07461,28.67457],[41.07457,28.67455],[41.07447,28.67451],[41.07431,28.67434],[41.07428,28.67431],[41.07424,28.67427],[41.0742,28.67423],[41.07416,28.67418],[41.07416,28.67425],[41.07417,28.67439],[41.07417,28.67455],[41.07417,28.67461],[41.07416,28.67498],[41.07413,28.67522],[41.07416,28.67529],[41.07452,28.67558],[41.07517,28.67618],[41.07533,28.67634],[41.07541,28.67517]],"tapu_alan":"13.000,23","nitelik":"Arsa","lon":28.67483136363636,"lat":41.074535},{"kurum":"Sosyal Güvenlik Kurumu (SGK)","ilce":"Küçükçekmece","mahalle":"Halkalı","ada":881,"parsel":1,"m2":14907.7,"imar":"Ticaret + Konut Alanı","bedel":"1.200.000.000 TL (tahmini satış değeri)","ihale":"Elektronik açık artırma: 02.11.2026 13:20 – 03.11.2026 13:20. Başvurular 23.10.2026'da kapandı.","link":"https://www.ilan.gov.tr/ilan/2241095/emlak-arsa-istanbulda-3-adet-arsa-satis-ihalesi","tip":"kamu_arsa","geometry":[[41.02692,28.77532],[41.02691,28.77526],[41.02644,28.7748],[41.02617,28.77455],[41.0258,28.77523],[41.0254,28.77484],[41.02518,28.77523],[41.02517,28.77526],[41.02643,28.77644],[41.02644,28.77641],[41.02648,28.77634],[41.02692,28.77532]],"tapu_alan":"14.907,70","nitelik":"Arsa","lon":28.77541666666667,"lat":41.02618833333333},{"kurum":"İstanbul Büyükşehir Belediyesi (İBB)","ilce":"Kadıköy","mahalle":"İbrahimağa","ada":1304,"parsel":21,"m2":1796,"imar":"Özel Sağlık Tesisi (Yençok 3 kat, ayrık nizam)","bedel":"583.700.000 TL (bina + arsa muhammen bedeli)","ihale":"Kapalı teklif (2886/36): 17.11.2026 saat 11:30, İBB Encümen Salonu. Üzerinde 6 katlı boş hastane binası var. 10.000 m² altında, sağlık imarı nedeniyle eklendi.","link":"https://www.ilan.gov.tr/ilan/2270990/emlak-bina-apartman-istanbul-buyuksehir-belediye-baskanligindan-tasinmaz-satis-ihalesi","tip":"kamu_saglik","geometry":[[40.99814,29.03322],[40.99791,29.03325],[40.99793,29.03347],[40.99832,29.03365],[40.99845,29.03366],[40.99844,29.03341],[40.99843,29.03317],[40.99814,29.03322]],"tapu_alan":"1.796,00","nitelik":"Arsa","lon":29.03338125,"lat":40.998219999999996}];
+const AREAS = [];
+const fmt = n => Math.round(n).toLocaleString("tr-TR");
+const parcelLayer = L.layerGroup();
+PARCELS.forEach(p => {
+  const sag = p.tip === "kamu_saglik";
+  const html = `<b class="t">${esc(p.ilce)} / ${esc(p.mahalle)} · Ada ${p.ada} Parsel ${p.parsel}</b>
+    <div style="color:#b28704;font-weight:600;margin-bottom:4px">${sag ? "Kamu satışı · sağlık imarlı bina" : "Kamu satış arsası"}</div>
+    <div><span class="k">Satan kurum:</span> ${esc(p.kurum)}</div>
+    <div><span class="k">Yüzölçümü:</span> ${fmt(p.m2)} m² <span class="k">(TKGM: ${esc(p.tapu_alan || "-")} m²)</span></div>
+    <div><span class="k">İmar:</span> ${esc(p.imar)}</div>
+    <div><span class="k">Bedel:</span> ${esc(p.bedel)}</div>
+    <div><span class="k">İhale:</span> ${esc(p.ihale)}</div>
+    <div style="margin-top:6px"><a href="${esc(p.link)}" target="_blank" rel="noopener">Resmi ilanı aç (ilan.gov.tr)</a> ·
+    <a href="https://www.google.com/maps/search/?api=1&query=${p.lat},${p.lon}" target="_blank" rel="noopener">Google Maps</a></div>
+    <div class="k" style="margin-top:4px;font-size:12px">Parsel sınırı: TKGM</div>`;
+  L.polygon(p.geometry, { color:"#ffd600", weight:3, fillColor:"#ffd600", fillOpacity:.25, bubblingMouseEvents:false }).bindPopup(html).addTo(parcelLayer);
+  L.marker([p.lat, p.lon], { zIndexOffset:2000, title:`Ada ${p.ada} Parsel ${p.parsel}`,
+    icon: L.divIcon({ className:"", iconSize:[34,34], iconAnchor:[17,17], popupAnchor:[0,-17],
+      html:`<div class="pin big" style="width:34px;height:34px;background:#ffd600;color:#222;border-color:#222">${sag ? "H" : "₺"}</div>` }) }).bindPopup(html).addTo(parcelLayer);
+});
+parcelLayer.addTo(map);
+document.getElementById("nParcels").textContent = PARCELS.length;
+
+const KINDS = {
+  ticari:   { label:"Ticari / AVM", color:"#00e5ff" },
+  egitim:   { label:"Eğitim", color:"#76ff03" },
+  saglik:   { label:"Sağlık", color:"#ff4081" },
+  kurumsal: { label:"Kurumsal", color:"#e040fb" },
+  bos:      { label:"Boş / eski sanayi", color:"#ff9100" },
+};
+const areaLayer = L.layerGroup().addTo(map);
+const areaPolys = AREAS.map(a => {
+  const k = KINDS[a.k];
+  const pg = L.polygon(a.g, { color:k.color, weight:2, dashArray:"5 4", fillColor:k.color, fillOpacity:.12, bubblingMouseEvents:false });
+  pg.bindPopup(() => `<b class="t">${esc(a.n || "İsimsiz alan")}</b>
+    <div style="color:${k.color};font-weight:600;margin-bottom:4px;filter:brightness(.7)">${k.label} alanı</div>
+    <div><span class="k">Yaklaşık alan:</span> ${fmt(a.a)} m² (${(a.a/10000).toFixed(1)} hektar)</div>
+    ${a.op ? `<div><span class="k">İşletmeci:</span> ${esc(a.op)}</div>` : ""}
+    <div style="margin-top:6px;font-size:12px" class="k">Mevcut kullanım OpenStreetMap'ten. Satılık olduğu ya da imarının hastaneye uygun olduğu anlamına gelmez; parsel ve imar durumu ayrıca kontrol edilmeli.</div>
+    <div style="margin-top:6px"><a href="https://www.openstreetmap.org/${{w:"way",r:"relation"}[a.id[0]]}/${a.id.slice(1)}" target="_blank" rel="noopener">OSM kaydı</a> ·
+    <a href="https://parselsorgu.tkgm.gov.tr/" target="_blank" rel="noopener">TKGM Parsel Sorgu</a></div>`);
+  pg._k = a.k;
+  return pg;
+});
+const kindCounts = {};
+AREAS.forEach(a => kindCounts[a.k] = (kindCounts[a.k] || 0) + 1);
+const kindsEl = document.getElementById("areaKinds");
+for (const [k, v] of Object.entries(KINDS)) {
+  if (!kindCounts[k]) continue;
+  kindsEl.insertAdjacentHTML("beforeend", `<label><input type="checkbox" value="${k}" checked><i style="border-color:${v.color};background:${v.color}33"></i>${v.label} (${kindCounts[k]})</label>`);
+}
+document.getElementById("nAreas").textContent = AREAS.length;
+function refreshAreas() {
+  areaLayer.clearLayers();
+  if (!document.getElementById("lyrAreas").checked) return;
+  const on = new Set([...kindsEl.querySelectorAll("input:checked")].map(i => i.value));
+  areaPolys.forEach(p => on.has(p._k) && areaLayer.addLayer(p));
+}
+kindsEl.addEventListener("change", refreshAreas);
+document.getElementById("lyrAreas").onchange = refreshAreas;
+document.getElementById("lyrParcels").onchange = e => e.target.checked ? parcelLayer.addTo(map) : map.removeLayer(parcelLayer);
+refreshAreas();
 
 let circle = null;
 const rb = document.getElementById("radiusBox");
